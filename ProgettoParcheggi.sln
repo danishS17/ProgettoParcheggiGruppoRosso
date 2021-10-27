@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parcheggi", "Parcheggi\Parcheggi.csproj", "{B74213A3-23A3-4513-9AD8-2F91ACB09C9A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B74213A3-23A3-4513-9AD8-2F91ACB09C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B74213A3-23A3-4513-9AD8-2F91ACB09C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B74213A3-23A3-4513-9AD8-2F91ACB09C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B74213A3-23A3-4513-9AD8-2F91ACB09C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CCA166B9-B57C-4A52-81C2-3DC208920A72}
+	EndGlobalSection
+EndGlobal
