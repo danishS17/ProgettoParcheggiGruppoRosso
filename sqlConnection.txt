@@ -1,0 +1,36 @@
+string constring = "Server = DESKTOP-R6PQGP4\\SQLEXPRESSNEW; Database=Test; User Id=sa; Password = Danishveer&17012001";
+            SqlConnection connection = new SqlConnection(constring);
+
+            connection.Open();
+
+            //  string comandosql1 = "SELECT * FROM Person";
+            //  SqlCommand comanda = new SqlCommand(comandosql1, connection);
+
+            //    string sqlinsert = "Insert into Person (Nome, Cognome,Anni) Values('Oleari', 'Filippo', 20)";
+            //  SqlCommand comando = new SqlCommand(sqlinsert, connection);
+            //  comando.ExecuteNonQuery();
+
+
+            //string sqlcount = "SELECT COUNT(*) FROM Person WHERE Anni = 20";
+
+            //SqlCommand comando = new SqlCommand(sqlcount, connection);
+            //int risultato = (int)comando.ExecuteScalar(); //perchè mi ritorna solo un valore
+
+            //MessageBox.Show(risultato.ToString());
+
+
+ string sqlReader = "SELECT * FROM Person";
+            SqlCommand comando = new SqlCommand(sqlReader, connection);
+            SqlDataReader dr = comando.ExecuteReader();
+
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    string nome = dr["Nome"] as string;
+                    string cognome = dr["Cognome"] as string;
+                    string anni = dr["Anni"].ToString();
+
+                    MessageBox.Show("Cognome: "+ cognome +"\n" + "Nome: "+ nome +"\nAnni: " + anni);
+                }
+            }
