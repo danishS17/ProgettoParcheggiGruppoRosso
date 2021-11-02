@@ -258,7 +258,8 @@
                 </StackPanel>
 
             </StackPanel>
-            <ComboBox x:Name="combo"  HorizontalAlignment="Left" Margin="49,10,0,0" VerticalAlignment="Top" Width="133" Height="28" SelectionChanged="ComboBoxSelection"/>
+            <ComboBox x:Name="combo"  HorizontalAlignment="Left" Margin="49,10,0,0" VerticalAlignment="Top" Width="133" Height="37" SelectionChanged="ComboBoxSelection"/>
+            <Button Style="{DynamicResource ButtonStyle1}"  Content="Storico" HorizontalAlignment="Left" Margin="850,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.287,-0.749" Height="37" Width="100" Click="ShowStoricoClick"/>
 
 
         </Grid>

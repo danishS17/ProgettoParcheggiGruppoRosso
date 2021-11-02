@@ -1,0 +1,57 @@
+﻿<Window x:Class="Parcheggi.StoricoView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Parcheggi"
+      mc:Ignorable="d" 
+      Title="StoricoView" Height="658" Width="1000" >
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+
+            <RowDefinition></RowDefinition>
+
+            <RowDefinition Height="300">
+            </RowDefinition>
+
+            <RowDefinition Height="80">
+            </RowDefinition>
+
+        </Grid.RowDefinitions>
+
+        <!--Creo stackPanel-->
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Width="306">
+
+            <DatePicker x:Name="dateSelected" Height="50" Width="162" Margin="10 10 10 10" />
+
+
+            <Button Height="50" Width="100" HorizontalAlignment="Center" Margin="10 10 10 10" Click="Button_Click">
+                Cerca
+            </Button>
+
+
+        </StackPanel>
+
+
+
+        <!--Nel binding va messo il nome della propietà-->
+        <DataGrid x:Name="data" IsReadOnly="True" CanUserDeleteRows="False"  AutoGenerateColumns="False" Margin="28,113,28,72" Grid.RowSpan="2">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Parcheggio" Width="100" Binding="{Binding ParkingId}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Data giorno" Width="190" Binding="{Binding SearhDate,StringFormat='dd/MM/yyyy'}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Stato" Width="120" Binding="{Binding Stato,TargetNullValue=NULL}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Incasso" Width="200" Binding="{Binding Revenue,TargetNullValue=NULL}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Id Veicolo" Width="170" Binding="{Binding VehicleId,TargetNullValue=NULL}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Token" Width="160" Binding="{Binding Token,TargetNullValue=NULL}"></DataGridTextColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <Label HorizontalAlignment="Center" FontSize="18" VerticalAlignment="Top" Margin="0,52,0,0">Storico Parcheggi</Label>
+
+    </Grid>
+</Window>

@@ -431,6 +431,11 @@ namespace Parcheggi
             connection.Close();
         }
 
-      
+        private void ShowStoricoClick(object sender, RoutedEventArgs e)
+        {
+            StoricoView storicoView = new StoricoView(combo.SelectedValue.ToString());
+
+            storicoView.Show();
+        }
     }
 }
