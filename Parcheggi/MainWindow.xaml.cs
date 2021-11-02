@@ -18,10 +18,7 @@ namespace Parcheggi
         {
             InitializeComponent();
 
-
-
-           SqlCommand cmd = new SqlCommand("SELECT * FROM InfoParking",connection);
-
+            SqlCommand cmd = new SqlCommand("SELECT * FROM InfoParking",connection);
 
             connection.Open();
 
@@ -133,6 +130,22 @@ namespace Parcheggi
 
                     };
 
+                    if(comboSelected)
+                    {
+                        connection.Open();
+
+                        string checkState = $"SELECT Stato From Parking WHERE ParkingId = '{"P" + iRow.ToString() + jCol.ToString()}' AND InfoParkId = {combo.SelectedValue.ToString()}";
+                        SqlCommand checkStateCommand = new SqlCommand(checkState,connection);
+                        bool state = (bool)checkStateCommand.ExecuteScalar();
+
+                        if(state)
+                        {
+                            B.Style = FindResource("VeicoloClick2") as Style;
+                        }
+
+                        connection.Close();
+                    }
+
                     B.Click += ParcheggioClick;
 
                     Bottoni.Add("P" + iRow.ToString() + jCol.ToString(), B);
@@ -238,7 +251,9 @@ namespace Parcheggi
         }
 
 
-       // string oldIndex = "0";
+        // string oldIndex = "0";
+
+        bool comboSelected = false;
         private void ComboBoxSelection(object sender, SelectionChangedEventArgs e)
         {
 
@@ -247,6 +262,8 @@ namespace Parcheggi
             DynamicGrid.ColumnDefinitions.Clear(); //cancello le colonne
             DynamicGrid.Children.Clear(); //cancello i componenti UI del grid
             Bottoni.Clear();
+
+            comboSelected = true;
 
            connection.Open();
 
@@ -269,7 +286,6 @@ namespace Parcheggi
             Veicoli_metodi.IsEnabled = true;
 
             //ComboBoxItem typeItem = (ComboBoxItem)combo.SelectedItem;
-
 
             //  MessageBox.Show(row.ToString());
 
@@ -342,7 +358,6 @@ namespace Parcheggi
 
                 Bottoni[clickedButton].Style = FindResource("VeicoloClick2") as Style;
 
-
                 //MessageBox.Show(combo.SelectedValue.ToString());
 
                 MessageBox.Show(token);
@@ -401,12 +416,7 @@ namespace Parcheggi
 
             }
 
-
             connection.Close();
-
-           
-           
-
 
         }
 
