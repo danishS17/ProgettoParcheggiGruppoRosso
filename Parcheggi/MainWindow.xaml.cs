@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Collections.Generic;
 using System;
 using System.Data;
 
@@ -11,17 +12,16 @@ namespace Parcheggi
     public partial class MainWindow : Window
     {
         SqlConnection connection = new SqlConnection("Data Source=DESKTOP-R6PQGP4\\SQLEXPRESSNEW;Initial Catalog=ParkingManagement;User ID=sa;Password=Danishveer&17012001");
+       
+        Dictionary<string, Button> Bottoni = new Dictionary<string, Button>();
         public MainWindow()
         {
             InitializeComponent();
 
 
-            SqlCommand cmd = new SqlCommand("SELECT * FROM InfoParking",connection);
 
-            connection.Open();
-            SqlCommand cmdDelete = new SqlCommand("delete Parking", connection);
-            cmdDelete.ExecuteNonQuery();
-            connection.Close();
+           SqlCommand cmd = new SqlCommand("SELECT * FROM InfoParking",connection);
+
 
             connection.Open();
 
@@ -31,6 +31,7 @@ namespace Parcheggi
 
             adapter.Fill(dt);
 
+            //riempo il combobox
             combo.ItemsSource = dt.DefaultView;
 
             combo.DisplayMemberPath = "NamePark";
@@ -54,7 +55,7 @@ namespace Parcheggi
                 DynamicGrid.RowDefinitions.Clear();    //cancello le righe
                 DynamicGrid.ColumnDefinitions.Clear(); //cancello le colonne
                 DynamicGrid.Children.Clear(); //cancello i componenti UI del grid
-
+                Bottoni.Clear();
                 GeneraGrid(); //genero la nuova grid
             }
         }
@@ -77,7 +78,9 @@ namespace Parcheggi
 
                 GeneraButton(); //con questo metodo genero i button
                 CreateParking(row, col,Nome.Text);
-                                // printDictionary();
+                // printDictionary();
+
+                
 
                 checkButtonState = true;
                 Veicoli_metodi.IsEnabled = true;
@@ -130,6 +133,10 @@ namespace Parcheggi
 
                     };
 
+                    B.Click += ParcheggioClick;
+
+                    Bottoni.Add("P" + iRow.ToString() + jCol.ToString(), B);
+
                     panel.Child = B;
 
                     DynamicGrid.Children.Add(panel);
@@ -137,6 +144,39 @@ namespace Parcheggi
 
             }
   
+        }
+
+        string oldKey = "P00";
+        bool parcheggiCheckState = false;
+        string clickedButton = "P00";
+        private void ParcheggioClick(object sender, RoutedEventArgs e)
+        {
+            string infoParkId = combo.SelectedValue.ToString();
+
+            connection.Open();
+
+            string checkStateCommand = "SELECT Stato FROM Parking WHERE InfoParkId = "+infoParkId+" AND ParkingId = '"+oldKey+"'";
+            SqlCommand checkStateSQL = new SqlCommand(checkStateCommand, connection);
+            bool state = (bool)checkStateSQL.ExecuteScalar();
+            //MessageBox.Show(state.ToString());
+            connection.Close();
+
+            if (state)
+            {
+                Bottoni[oldKey].Style = FindResource("VeicoloClick2") as Style;
+            }
+            else
+            {
+                Bottoni[oldKey].Style = FindResource("StileVeicolo") as Style;
+            }
+
+
+            
+            ((Button)sender).Style = FindResource("VeicoloClick") as Style;
+            clickedButton = ((Button)sender).Name;
+            oldKey = ((Button)sender).Name;
+            parcheggiCheckState = true;
+
         }
 
         private void GeneraRigheDinamiche(int row) //Genera le righe in modo dinamiche
@@ -192,26 +232,167 @@ namespace Parcheggi
                     connection.Close();
 
 
-                    //carico la tabella storico
-                    connection.Open();
-                    
-
-                    string ParkingIdStorico = "P" + i.ToString() + j.ToString();
-                    string commandInsertStorico = "INSERT INTO History (ParkingId,Stato,InfoParkId) VALUES('" + ParkingIdStorico + "', 0," + currentId + ")";
-                    SqlCommand commandInsStorico = new SqlCommand(commandInsertStorico, connection);
-                    commandInsStorico.ExecuteNonQuery();
-
-                    connection.Close();
-
-
 
                 }
             }
         }
 
 
+       // string oldIndex = "0";
+        private void ComboBoxSelection(object sender, SelectionChangedEventArgs e)
+        {
+
+            string index = combo.SelectedValue.ToString();
+            DynamicGrid.RowDefinitions.Clear();    //cancello le righe
+            DynamicGrid.ColumnDefinitions.Clear(); //cancello le colonne
+            DynamicGrid.Children.Clear(); //cancello i componenti UI del grid
+            Bottoni.Clear();
+
+           connection.Open();
+
+           string selectRow = $"SELECT Nrighe FROM InfoParking WHERE InfoParkId ={index}";
+           SqlCommand comandrow = new SqlCommand(selectRow, connection);
+           int row = (int)comandrow.ExecuteScalar();
+
+           string selectCol = $"SELECT Ncol FROM InfoParking WHERE InfoParkId ={index}";
+           SqlCommand comandcol = new SqlCommand(selectRow, connection);
+           int col = (int)comandcol.ExecuteScalar();
+
+           connection.Close();
+
+           GeneraRigheDinamiche(row); //con questo metodo genero le righe del grid
+           GeneraColDinamiche(col);   //con questo metodo genero le colonne del grid
+           GeneraButton(); //con questo metodo genero i button
+
+            //Button_Entra.Visibility = Visibility.Visible;
+
+            Veicoli_metodi.IsEnabled = true;
+
+            //ComboBoxItem typeItem = (ComboBoxItem)combo.SelectedItem;
+
+
+            //  MessageBox.Show(row.ToString());
+
+        }
+
+        private void ButtonEntraClick(object sender, RoutedEventArgs e)
+        {
+            string targa = TargaText.Text;
+
+            connection.Open();
+
+            string check = "IF EXISTS(SELECT Vehicle.LicensePlate FROM Vehicle WITH(NOLOCK) WHERE LicensePlate = '"+targa+"') BEGIN SELECT '1' END ELSE BEGIN SELECT '0' END";
+            SqlCommand command = new SqlCommand(check,connection);
+            string result = (string)command.ExecuteScalar();
+
+            if (result == "0")
+            {
+                MessageBox.Show("Targa inserita non esiste oppure è sbagliata", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (parcheggiCheckState == false )
+            {
+                MessageBox.Show("Non hai selezionato un parcheggio", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                Random random = new Random();
+              
+                //prima prendo l'id del veicolo SELECT VehicleID FROM Vehicle WHERE Vehicle.LicensePlate = 'Targa'
+
+                //poi prendo prendo il valore del indice selezionato e faccio il UPDATE e genero il token
+                //nel second step inserisco anche la data in entrata e quello di uscita la metto dopo.
+
+                string sqlSelect = "SELECT VehicleID FROM Vehicle WHERE Vehicle.LicensePlate = '"+targa+"'";
+                SqlCommand commandSelect = new SqlCommand(sqlSelect,connection);
+                string VehicleId = commandSelect.ExecuteScalar().ToString();
+                string token = random.Next(10000, 90000).ToString();
+                string infoParkId = combo.SelectedValue.ToString();
+
+                string sqlUpate = "UPDATE Parking SET Stato = 1,Revenue = 0,VehicleId = "+VehicleId+" ,Token = '"+token+"', EntryTimeDate = '"+DateTime.Now+"' WHERE InfoParkId = '"+infoParkId+"' AND ParkingId = '"+clickedButton+"'";
+                SqlCommand commandUpate = new SqlCommand(sqlUpate, connection);
+                commandUpate.ExecuteNonQuery();
+
+               // Bottoni[clickedButton].Content = targa;
+
+                Bottoni[clickedButton].Style = FindResource("VeicoloClick2") as Style;
+
+
+                //MessageBox.Show(combo.SelectedValue.ToString());
+
+                MessageBox.Show(token);
+
+            }
+
+            connection.Close();
+
+        }
+        int Counter = 0;
+        private void ButtonUscitaClick(object sender, RoutedEventArgs e)
+        {
+            string token = "";
+            string infoParkId = combo.SelectedValue.ToString();
+
+            Counter++;
+
+            connection.Open();
+
+            string SqlToken = $"SELECT Parking.Token FROM Parking WHERE InfoParkId = {infoParkId}  AND ParkingId = '{clickedButton}'";
+            SqlCommand tokenCommand = new SqlCommand(SqlToken, connection);
+            token = tokenCommand.ExecuteScalar().ToString();
 
 
 
+            //MessageBox.Show(token);
+
+            if (token != TargaText.Text)
+            {
+                MessageBox.Show("Inserire il token fornito!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+
+                string SqlSelectRevenue = "SELECT Revenue FROM Parking WHERE InfoParkId = " + combo.SelectedValue + " AND ParkingId = '" + clickedButton + "'";
+                SqlCommand SelectCommand = new SqlCommand(SqlSelectRevenue, connection);
+                string revenue = (SelectCommand.ExecuteScalar()).ToString();
+
+                string SqlSelectDateTime = "SELECT EntryTimeDate FROM Parking WHERE InfoParkId = " + combo.SelectedValue + " AND ParkingId = '" + clickedButton + "'";
+                SqlCommand DateTimeCommand = new SqlCommand(SqlSelectRevenue, connection);
+                string dateTime = Convert.ToString(SelectCommand.ExecuteScalar());
+
+               // MessageBox.Show(dateTime);
+
+                //imeSpan diff = DateTime.Now - dateTime;
+               
+               double calcola = Convert.ToDouble(Counter) * 2.00;
+
+                string SqlUpdateCommand = $"UPDATE Parking SET Revenue = {calcola}, Stato = 0, EntryTimeDate = NULL, VehicleId = NULL, Token = NULL WHERE InfoParkId = {infoParkId} AND ParkingId = '{clickedButton}'";
+                SqlCommand updateCommand = new SqlCommand(SqlUpdateCommand, connection);
+                updateCommand.ExecuteNonQuery();
+
+                Bottoni[clickedButton].Style = FindResource("StileVeicolo") as Style;
+            }
+
+
+            connection.Close();
+
+           
+            MessageBox.Show(" La macchina è uscita");
+
+
+
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            connection.Open();
+
+            string SqlTranferDataCommand = "INSERT INTO History(ID,ParkingId,Stato,Revenue,EntryTimeDate,VehicleId,InfoParkId,Token) SELECT * FROM Parking";
+            SqlCommand commandTransfer = new SqlCommand(SqlTranferDataCommand, connection);
+            commandTransfer.ExecuteNonQuery();
+
+            connection.Close();
+        }
+
+      
     }
 }

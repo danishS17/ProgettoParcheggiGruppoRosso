@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Parcheggi"
         mc:Ignorable="d"
-        Title="MainWindow" Height="658" Width="1000">
+        Title="MainWindow" Height="658" Width="1000" Closed="Window_Closed">
 
     <Window.Resources>
 
@@ -208,9 +208,13 @@
 
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="143*"/>
+            <ColumnDefinition Width="857*"/>
+        </Grid.ColumnDefinitions>
 
 
-        <Grid>
+        <Grid Grid.ColumnSpan="2">
 
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -223,10 +227,7 @@
 
 
             <Grid x:Name="DynamicGrid" Margin="10,70,10,10" Background="#FFFF">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="17*"/>
-                </Grid.ColumnDefinitions>
+
                 <!-- Grid dove generare le col -->
                 <!-- Grid dove generare le col -->
             </Grid>
@@ -247,8 +248,8 @@
                 </StackPanel>
                 <StackPanel x:Name="Veicoli_metodi" IsEnabled="False" Orientation="Horizontal" Width="400" Height="100">
                     <StackPanel Width="164">
-                        <Button Style="{DynamicResource ButtonStyle1}"  x:Name="Button_Entra" Content="ENTRA" HorizontalAlignment="Left" Margin="30,10,0,0" VerticalAlignment="Center" Height="37" Width="123" FontSize="24" Background="{x:Null}" BorderThickness="2,2,2,2" />
-                        <Button Style="{DynamicResource ButtonStyle1}"  x:Name="Button_Esci" Content="ESCI" HorizontalAlignment="Left" VerticalAlignment="Center" Height="37" Width="122" FontSize="24" Background="{x:Null}" BorderThickness="2,2,2,2" Margin="30,10,0,0"  />
+                        <Button Style="{DynamicResource ButtonStyle1}"  x:Name="Button_Entra" Content="ENTRA" HorizontalAlignment="Left" Margin="30,10,0,0" VerticalAlignment="Center" Height="37" Width="123" FontSize="24" Background="{x:Null}" BorderThickness="2,2,2,2" Click="ButtonEntraClick" />
+                        <Button Style="{DynamicResource ButtonStyle1}"  x:Name="Button_Esci" Content="ESCI" HorizontalAlignment="Left" VerticalAlignment="Center" Height="37" Width="122" FontSize="24" Background="{x:Null}" BorderThickness="2,2,2,2" Margin="30,10,0,0" Click="ButtonUscitaClick"  />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="246" HorizontalAlignment="Center">
                         <Label x:Name="Targa_label" Content="Targa" Height="34" Width="74" FontSize="18" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
@@ -257,7 +258,7 @@
                 </StackPanel>
 
             </StackPanel>
-            <ComboBox x:Name="combo"  HorizontalAlignment="Left" Margin="49,10,0,0" VerticalAlignment="Top" Width="133" Height="28"/>
+            <ComboBox x:Name="combo"  HorizontalAlignment="Left" Margin="49,10,0,0" VerticalAlignment="Top" Width="133" Height="28" SelectionChanged="ComboBoxSelection"/>
 
 
         </Grid>
