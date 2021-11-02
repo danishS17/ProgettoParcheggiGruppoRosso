@@ -275,10 +275,31 @@ namespace Parcheggi
 
         }
 
+        bool checkOccupation(string infoParkId, string ParkingId)
+        {
+        
+
+            string check1 = $"SELECT Stato FROM Parking WHERE ParkingId = '{ParkingId}' AND InfoParkId = {infoParkId}";
+            SqlCommand checkCommand = new SqlCommand(check1, connection);
+            bool truth = (bool)checkCommand.ExecuteScalar();
+
+            //MessageBox.Show(truth.ToString());
+
+            if (truth)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
         private void ButtonEntraClick(object sender, RoutedEventArgs e)
         {
             string targa = TargaText.Text;
-
+            string infoParkId = combo.SelectedValue.ToString();
             connection.Open();
 
             string check = "IF EXISTS(SELECT Vehicle.LicensePlate FROM Vehicle WITH(NOLOCK) WHERE LicensePlate = '"+targa+"') BEGIN SELECT '1' END ELSE BEGIN SELECT '0' END";
@@ -293,10 +314,15 @@ namespace Parcheggi
             {
                 MessageBox.Show("Non hai selezionato un parcheggio", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            else if (checkOccupation(infoParkId, clickedButton))
+            {
+                MessageBox.Show("Parcheggio già occupato", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             else
             {
                 Random random = new Random();
-              
+
+                
                 //prima prendo l'id del veicolo SELECT VehicleID FROM Vehicle WHERE Vehicle.LicensePlate = 'Targa'
 
                 //poi prendo prendo il valore del indice selezionato e faccio il UPDATE e genero il token
@@ -306,7 +332,7 @@ namespace Parcheggi
                 SqlCommand commandSelect = new SqlCommand(sqlSelect,connection);
                 string VehicleId = commandSelect.ExecuteScalar().ToString();
                 string token = random.Next(10000, 90000).ToString();
-                string infoParkId = combo.SelectedValue.ToString();
+               
 
                 string sqlUpate = "UPDATE Parking SET Stato = 1,Revenue = 0,VehicleId = "+VehicleId+" ,Token = '"+token+"', EntryTimeDate = '"+DateTime.Now+"' WHERE InfoParkId = '"+infoParkId+"' AND ParkingId = '"+clickedButton+"'";
                 SqlCommand commandUpate = new SqlCommand(sqlUpate, connection);
@@ -370,14 +396,16 @@ namespace Parcheggi
                 updateCommand.ExecuteNonQuery();
 
                 Bottoni[clickedButton].Style = FindResource("StileVeicolo") as Style;
+
+                MessageBox.Show(" La macchina è uscita");
+
             }
 
 
             connection.Close();
 
            
-            MessageBox.Show(" La macchina è uscita");
-
+           
 
 
         }
